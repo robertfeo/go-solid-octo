@@ -4,19 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"api/backend/types"
 )
 
-type book struct {
-	ID       string `json:"id"`
-	Title    string `json:"title"`
-	Author   string `json:"author"`
-	Quantity int    `json:"quantity"`
-}
-
-var books = []book{
-	{ID: "1", Title: "The Hitchhiker's Guide to the Galaxy", Author: "Douglas Adams", Quantity: 10},
-	{ID: "2", Title: "Cloud Native Go", Author: "M.-L. Reimer", Quantity: 5},
-}
+var books = []types.Book{}
 
 func getBooksHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, books)
@@ -35,7 +27,7 @@ func getBookByIDHandler(c *gin.Context) {
 }
 
 func createBookHandler(c *gin.Context) {
-	var newBook book
+	var newBook types.Book
 
 	if err := c.BindJSON(&newBook); err != nil {
 		return
@@ -45,12 +37,46 @@ func createBookHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newBook)
 }
 
+func home(c *gin.Context) {
+	c.String(http.StatusOK, "Hello Golang API")
+}
+
+func updateBookHandler(c *gin.Context) {
+	id := c.Param("id")
+	var updatedBook types.Book
+	if err := c.BindJSON(&updatedBook); err != nil {
+		return
+	}
+	for i, book := range books {
+		if book.ID == id {
+			books[i] = updatedBook
+			c.IndentedJSON(http.StatusOK, updatedBook)
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "book not found"})
+}
+
+func deleteBookHandler(c *gin.Context) {
+	id := c.Param("id")
+	for i, book := range books {
+		if book.ID == id {
+			books = append(books[:i], books[i+1:]...)
+			c.IndentedJSON(http.StatusOK, gin.H{"message": "book deleted"})
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "book not found"})
+}
+
 func main() {
 	router := gin.Default()
+	router.StaticFile("/favicon.ico", "./favicon/favicon.ico")
+	router.GET("/", home)
 	router.GET("/books", getBooksHandler)
 	router.GET("/books/:id", getBookByIDHandler)
 	router.POST("/books", createBookHandler)
-	/* router.PUT("/books/:id", updateBookHandler)
-	router.DELETE("/books/:id", deleteBookHandler) */
+	router.PUT("/books/:id", updateBookHandler)
+	router.DELETE("/books/:id", deleteBookHandler)
 	router.Run(":8080")
 }
