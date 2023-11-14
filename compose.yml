@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_URL=postgres://library_db:password@db:5432/library
+
+  db:
+    build:
+      context: ./backend/database
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: library
+      POSTGRES_USER: library_db
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

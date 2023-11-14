@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"api/backend/types"
+	"backend/types"
 )
 
 var books = []types.Book{}
