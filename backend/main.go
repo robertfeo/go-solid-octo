@@ -5,12 +5,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/joho/godotenv"
+
+	"backend/database"
 	"backend/types"
 )
 
 var books = []types.Book{}
 
 func getBooksHandler(c *gin.Context) {
+	books, err := database.GetBooks() // Implement this function in database.go
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "error fetching books"})
+		return
+	}
 	c.IndentedJSON(http.StatusOK, books)
 }
 
@@ -69,7 +77,13 @@ func deleteBookHandler(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "book not found"})
 }
 
+func initEnv() {
+	godotenv.Load(".env")
+}
+
 func main() {
+	initEnv()
+	database.Init()
 	router := gin.Default()
 	router.StaticFile("/favicon.ico", "./favicon/favicon.ico")
 	router.GET("/", home)
