@@ -10,7 +10,7 @@ import (
 var Pool *pgxpool.Pool
 
 func Init() {
-	dbUrl := "postgres://TodoManager:password@127.0.0.1:5432/TodoDB"
+	dbUrl := "postgres://library_db:password@127.0.0.1:5432/library"
 	newpool, err := pgxpool.New(context.Background(), dbUrl)
 	if err != nil {
 		fmt.Println("Error while creating db pool")
