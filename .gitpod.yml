@@ -5,7 +5,7 @@
 # Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
 
 tasks:
-  - init: go get && go build ./... && go test ./...
-    command: npm install -g npm@10.2.4
+  - init: cd backend | go get && go build ./... && go test ./...
+    command: cd .. | npm install -g npm@10.2.4
 
 
