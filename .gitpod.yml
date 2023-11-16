@@ -6,6 +6,6 @@
 
 tasks:
   - init: go get && go build ./... && go test ./...
-    command: go run .
+    command: npm install -g npm@10.2.4
 
 
